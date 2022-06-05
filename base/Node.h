@@ -15,7 +15,7 @@ public:
     V getValue() const;
     void setValue(V v);
 
-    // 储存下一 level 的节点
+    // 不同层数的下一节点
     Node<K, V> **_forward;
     int _nodeLevel;
 
