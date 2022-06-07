@@ -133,7 +133,7 @@ int SkipList<K, V>::insertElement(K key, V value) {
 
     // 创建数组update并初始化该数组
     Node<K, V>* update = new Node<K, V>[_maxLevel + 1]();
-
+    
     // 从跳表的左上角节点开始查找
     for(int i = _curLevel; i >= 0; --i) {
         // cur在该层的下一个节点的 _key 小于要找的 key
@@ -161,7 +161,7 @@ int SkipList<K, V>::insertElement(K key, V value) {
 
         if(randomLevel > _curLevel) {
             for(int i = _curLevel + 1; i <= randomLevel; ++i) {
-                update[i] = _header;
+                update[i] = *_header;
             }
             _curLevel = randomLevel;
         }
@@ -171,8 +171,8 @@ int SkipList<K, V>::insertElement(K key, V value) {
 
         // 插入节点
         for(int i = 0; i <= randomLevel; ++i) {
-            insertNode->_forward[i] = update[i]->_forward[i];
-            update[i]->_forward[i] = insertNode;
+            insertNode->_forward[i] = update[i]._forward[i];
+            update[i]._forward[i] = insertNode;
         }
 
         std::cout << "Successfully inserted key:" << key << ", value:" << value << std::endl;
@@ -221,7 +221,7 @@ bool SkipList<K, V>::searchElement(K key, V& value) {
     cur = cur->_forward[0];
     
     if(cur != nullptr && cur->getKey() == key) {
-        std::cout << "Found key: " << key << ", value: " << cur->get_value() << std::endl;
+        std::cout << "Found key: " << key << ", value: " << cur->getValue() << std::endl;
         return true;
     }
 
@@ -241,16 +241,16 @@ bool SkipList<K, V>::deleteElement(K key) {
         while(cur->_forward[i] != nullptr && cur->_forward[i]->getKey() < key) {
             cur = cur->_forward[i];
         }
-        update[i] = cur;
+        update[i] = *cur;
     }
     cur = cur->_forward[0];
 
     if(cur != nullptr && cur->getKey() == key) {
         for(int i = 0; i <= _curLevel; ++i) {
-            if(update[i]->_forward[i] != cur) {
+            if(update[i]._forward[i] != cur) {
                 break;
             }
-            update[i]->_forward[i] = cur->_forward[i];
+            update[i]._forward[i] = cur->_forward[i];
         }
         delete cur;
 
