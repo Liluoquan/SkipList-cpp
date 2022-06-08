@@ -20,7 +20,7 @@ public:
     int getRandomLevel();
     Node<K, V>* createNode(K, V, int);
     void displayList();
-    int insertElement(K, V);
+    int insertElement(const K, const V);
     bool searchElement(K, V&);
     bool deleteElement(K);
 
@@ -127,12 +127,12 @@ level 0         1    4   9 10         30   40  | 50 |  60      70       100
 */
 
 template <typename K, typename V>
-int SkipList<K, V>::insertElement(K key, V value) {
+int SkipList<K, V>::insertElement(const K key, const V value) {
     mtx.lock();
     Node<K, V>* cur = _header;
 
     // 创建数组update并初始化该数组
-    Node<K, V>* update = new Node<K, V>[_maxLevel + 1]();
+    Node<K, V>** update = new Node<K, V>* [_maxLevel + 1]();
     
     // 从跳表的左上角节点开始查找
     for(int i = _curLevel; i >= 0; --i) {
@@ -140,7 +140,7 @@ int SkipList<K, V>::insertElement(K key, V value) {
         while(cur->_forward[i] != nullptr && cur->_forward[i]->getKey() < key) {
             cur = cur->_forward[i];
         }
-        update[i] = *cur;
+        update[i] = cur;
     }
 
     // 到达最底层（第0层）,并且当前的 forward 指针指向第一个大于待插入节点的节点
@@ -148,7 +148,8 @@ int SkipList<K, V>::insertElement(K key, V value) {
 
     // 如果当前节点的 key 值和待插入节点 key 相等，说明节点已经存在，修改节点值即可
     if(cur != nullptr && cur->getKey() == key) {
-        //cout << "key: " << key << ", exists. Change it" << endl;
+        std::cout << "key: " << key << ", exists. Change it" << std::endl;
+        // FIXME:do we need to change it?
         cur->setValue(value);
         mtx.unlock();
         return 1;
@@ -156,12 +157,12 @@ int SkipList<K, V>::insertElement(K key, V value) {
 
     //如果current节点为null 这就意味着要将该元素插入最后一个节点。
     //如果current的key值和待插入的key不等，代表我们应该在update[0]和current之间插入该节点。
-    if(cur == nullptr || cur->getKey() == key) {
+    if(cur == nullptr || cur->getKey() != key) {
         int randomLevel = getRandomLevel();
 
         if(randomLevel > _curLevel) {
             for(int i = _curLevel + 1; i <= randomLevel; ++i) {
-                update[i] = *_header;
+                update[i] = _header;
             }
             _curLevel = randomLevel;
         }
@@ -171,8 +172,8 @@ int SkipList<K, V>::insertElement(K key, V value) {
 
         // 插入节点
         for(int i = 0; i <= randomLevel; ++i) {
-            insertNode->_forward[i] = update[i]._forward[i];
-            update[i]._forward[i] = insertNode;
+            insertNode->_forward[i] = update[i]->_forward[i];
+            update[i]->_forward[i] = insertNode;
         }
 
         std::cout << "Successfully inserted key:" << key << ", value:" << value << std::endl;
@@ -233,7 +234,7 @@ template <typename K, typename V>
 bool SkipList<K, V>::deleteElement(K key) {
     mtx.lock();
 
-    Node<K, V>* update = new Node<K, V>[_maxLevel + 1]();
+    Node<K, V>** update = new Node<K, V>* [_maxLevel + 1]();
 
     Node<K, V>* cur = _header;
 
@@ -241,7 +242,7 @@ bool SkipList<K, V>::deleteElement(K key) {
         while(cur->_forward[i] != nullptr && cur->_forward[i]->getKey() < key) {
             cur = cur->_forward[i];
         }
-        update[i] = *cur;
+        update[i] = cur;
     }
     cur = cur->_forward[0];
 
