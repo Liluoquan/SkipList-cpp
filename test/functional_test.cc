@@ -1,7 +1,7 @@
 #include <iostream>
 #include "../base/SkipList.h"
 
-#define FILE_PATH "./store/dumpFile"
+// #define FILE_PATH "../store/dumpFile"
 
 int main(int argv, char* argc[]) {
 
@@ -24,19 +24,9 @@ int main(int argv, char* argc[]) {
     mySkipList.dumpFile();
 
     std::string value;
-    if(mySkipList.searchElement(1, value)) {
-        std::cout << "find value of key 1:" << value << std::endl;
-    }
-    else {
-        std::cout << "skipList can not find the key" << std::endl;
-    }
+    mySkipList.searchElement(1, value);
 
-    if(mySkipList.searchElement(4, value)) {
-        std::cout << "find value of key 1:" << value << std::endl;
-    }
-    else {
-        std::cout << "skipList can not find the key" << std::endl;
-    }
+    mySkipList.searchElement(4, value);
 
     mySkipList.displayList();
 

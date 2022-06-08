@@ -6,7 +6,7 @@
 #include <iostream>
 #include "Node.h"
 
-#define STORE_FILE "./store/dumpFile"
+#define STORE_FILE "../store/dumpFile"
 const std::string DELIMITER = ":";
 
 std::mutex mtx;
@@ -209,7 +209,7 @@ bool SkipList<K, V>::searchElement(K key, V& value) {
     Node<K, V>* cur = _header;
     
     // 从跳表的最左上角开始查找
-    for(int i = _curLevel; i >= 0; ++i) {
+    for(int i = _curLevel; i >= 0; --i) {
         while(cur->_forward[i] && cur->_forward[i]->getKey() < key) {
             cur = cur->_forward[i];
         }
