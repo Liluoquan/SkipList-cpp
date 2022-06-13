@@ -6,6 +6,7 @@
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 // 使用给定的端口设置套接字，返回监听到的套接字
 int socket_bind_listen(int port) {
@@ -71,6 +72,17 @@ int main(int argc, char* argv[]) {
             }
         }
     }
+    
+    int listen_fd = socket_bind_listen(port);
+    struct sockaddr_in client_addr;
+    memset(&client_addr, 0, sizeof(struct sockaddr_in));
+    socklen_t client_addr_len = sizeof(client_addr);
+    int accept_fd = 0;
+    while((accept_fd = accept(listen_fd, (struct sockaddr *)&client_addr, 
+                              &client_addr_len)) > 0) {
+        //pthread_create();
+    }
+
 }
 
 
