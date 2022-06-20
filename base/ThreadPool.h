@@ -29,11 +29,15 @@ private:
 
 inline ThreadPool::ThreadPool(size_t threads) : _stop(false) {
     for(size_t i = 0; i < threads; ++i) {
+        // 每个线程需要做的事情很简单：
+        // 1. 从任务队列中获取任务（需要保护临界区）
+        // 2. 执行任务
         _workers.emplace_back([this] {
             while(true) {
                 std::function<void()> task;
                 {
                     std::unique_lock<std::mutex> lock(this->_queueMutex);
+                    // 等待唤醒，条件是停止或者任务队列中有任务
                     this->_condition.wait(lock, 
                                         [this]{ return this->_stop || !this->_tasks.empty(); });
                     if(this->_stop && this->_tasks.empty())
@@ -54,6 +58,7 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
 {
     using return_type = typename std::result_of<F(Args...)>::type;
     
+    // 将需要执行的任务函数打包（bind），转换为参数列表为空的函数对象
     auto task = std::make_shared<std::packaged_task<return_type()>> (
         std::bind(std::forward<F>(f), std::forward<Args>(args)...)
     );
@@ -65,6 +70,8 @@ auto ThreadPool::enqueue(F&& f, Args&&... args)
         if(_stop)
             throw std::runtime_error("enqueue on stopped ThreadPool");
 
+        // 最妙的地方，利用 lambda函数 包装线程函数，使其符合 function<void()> 的形式
+        // 并且返回值可以通过 future 获取
         _tasks.emplace([task]() {
             (*task)();
         });
