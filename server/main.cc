@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <thread>
 
+#include "Server.h"
+
 // 使用给定的端口设置套接字，返回监听到的套接字
 int socket_bind_listen(int port) {
     // 检查port，取正确区间范围
