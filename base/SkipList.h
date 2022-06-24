@@ -17,7 +17,7 @@ public:
     SkipList();
     SkipList(int maxLevel);
     ~SkipList();
-    int getRandomLevel();
+
     Node<K, V>* createNode(K, V, int);
     void displayList();
     int insertElement(const K, const V);
@@ -32,6 +32,7 @@ public:
 private:
     void get_key_value_from_string(const std::string& str, std::string* key, std::string* value);
     bool is_valid_string(const std::string& str);
+    int getRandomLevel();
 
 private:
     // 跳表的最大层数
@@ -280,7 +281,7 @@ void SkipList<K, V>::displayList() {
     for(int i = _curLevel; i >= 0; --i) {
         cur = _header->_forward[i];
         std::cout << "Level : " << i << ':' << std::endl;
-        while(cur != nullptr) {
+        while (cur != nullptr) {
             std::cout << cur->getKey() << ':' << cur->getValue() << ' ';
             cur = cur->_forward[i];
         }
@@ -293,7 +294,7 @@ void SkipList<K, V>::displayList() {
 template <typename K, typename V>
 int SkipList<K, V>::getRandomLevel() {
     int k = 0;
-    while(rand() % 2) {
+    while (rand() % 2) {
         ++k;
     }
     k = (k < _maxLevel) ? k : _maxLevel;
@@ -313,7 +314,7 @@ int SkipList<K, V>::getRandomLevel() {
 
 template <typename K, typename V>
 bool SkipList<K, V>::is_valid_string(const std::string& str) {
-    if(str.empty() || str.find(DELIMITER) == std::string::npos) {
+    if (str.empty() || str.find(DELIMITER) == std::string::npos) {
         return false;
     }
     

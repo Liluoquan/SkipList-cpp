@@ -42,28 +42,74 @@ std::string SkipListWorker::handlerERR(std::vector<std::string>& cmdList) {
     std::cout << std::endl;
 
 #endif
-    return "please enter a correct command : ";
+    return "error : please enter a correct command : SET/DEL/GET/LOAD/DUMP\n";
 }
 
 std::string SkipListWorker::handlerSET(std::vector<std::string>& cmdList) {
     // myDB.insertElement();
+    // SET key value
+    if (cmdList.size() != 3) {
+        return "error : please enter a correct command : SET key value\n";
+    }
+    if (!myDB.insertElement(cmdList[1], cmdList[2])) {
+        return "ok : SET successfully\n";
+    }
+    else {
+        return "warning : " + cmdList[1] + " is already existed\n";
+    }
 }
 
+std::string SkipListWorker::handlerDEL(std::vector<std::string>& cmdList) {
+    // DEL key
+    if (cmdList.size() != 2) {
+        return "error : please enter a correct command : DEL key\n";
+    }
+    if (myDB.deleteElement(cmdList[1])) {
+        return "ok : DEL successfully\n";
+    }
+    else {
+        return "warning : " + cmdList[1] + " is not existed\n";
+    }
+}
+
+std::string SkipListWorker::handlerGET(std::vector<std::string>& cmdList) {
+    // GET key
+    if (cmdList.size() != 2) {
+        return "please enter a correct command : GET key\n";
+    }
+    std::string value;
+    if (myDB.searchElement(cmdList[1], value)) {
+        return "ok : " + value + "\n";
+    }
+    else {
+        return "warning : " + cmdList[1] + " is not existed\n";
+    }
+}
+
+std::string SkipListWorker::handlerDUMP(std::vector<std::string>& cmdList) {
+    myDB.dumpFile();
+    return "ok : dump file successfully\n";
+}
+
+std::string SkipListWorker::handlerLOAD(std::vector<std::string>& cmdList) {
+    myDB.loadFile();
+    return "ok : load file successfully\n";
+}
 
 parseState SkipListWorker::parseCommand(std::string cmd, std::vector<std::string>& cmdList) {
     std::string res;
     // 按照空格分割 cmd
     int left = 0, right = 0;
-    while(right < cmd.size()) {
-        while(right < cmd.size() && cmd[right] == ' ') {  // 跳过前导空格
+    while (right < cmd.size()) {
+        while (right < cmd.size() && cmd[right] == ' ') {  // 跳过前导空格
             ++right;
         }
         left = right;
-        while(right < cmd.size() && cmd[right] != ' ') {  // 读取 非空格字符
+        while (right < cmd.size() && cmd[right] != ' ') {  // 读取 非空格字符
             ++right;
         }
         std::string&& str = cmd.substr(left, right - left);
-        if(str.size() != 0) {
+        if (str.size() != 0) {
             cmdList.emplace_back(str);
         }
         ++right;
@@ -74,7 +120,7 @@ parseState SkipListWorker::parseCommand(std::string cmd, std::vector<std::string
     std::string cmdName = cmdList.front();
     // 先将 命令名 转换为大写
     std::transform(cmdName.begin(), cmdName.end(), cmdName.begin(), toupper);
-    if(_cmdMap.count(cmd) == 0) {  // 命令不存在
+    if (_cmdMap.count(cmd) == 0) {  // 命令不存在
         return parseState::ERR;
     }
 
