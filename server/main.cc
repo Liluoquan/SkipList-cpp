@@ -54,11 +54,6 @@ int socket_bind_listen(int port) {
 
 
 
-void threadFunc(int socketFd) {
-    
-}
-
-
 int main(int argc, char* argv[]) {
     int threadNum = 2;
     int port = 4242;
@@ -90,7 +85,7 @@ int main(int argc, char* argv[]) {
     while((accept_fd = accept(listen_fd, (struct sockaddr *)&client_addr, 
                               &client_addr_len)) > 0) {
         //pthread_create();
-        std::thread workThread(threadFunc, accept_fd);
+        std::thread workThread(SkipListWorker::threadFunc, accept_fd);
     }
 
 }

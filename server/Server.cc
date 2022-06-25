@@ -3,6 +3,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <unistd.h>
+#include <stdio.h>
 
 #include "Server.h"
 #include "../base/SkipList.h"
@@ -155,6 +157,8 @@ void SkipListWorker::threadFunc(int acceptFd) {
         send(acceptFd, res.c_str(), res.size(), 0);
     }
 
+    // 记得关闭连接描述符
+    close(acceptFd);
     std::cout << "connection closed" << std::endl;
 }
 
