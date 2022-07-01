@@ -223,6 +223,7 @@ bool SkipList<K, V>::searchElement(K key, V& value) {
     cur = cur->_forward[0];
     
     if(cur != nullptr && cur->getKey() == key) {
+        value = cur->getValue();
         std::cout << "Found key: " << key << ", value: " << cur->getValue() << std::endl;
         return true;
     }
@@ -249,10 +250,10 @@ bool SkipList<K, V>::deleteElement(K key) {
 
     if(cur != nullptr && cur->getKey() == key) {
         for(int i = 0; i <= _curLevel; ++i) {
-            if(update[i]._forward[i] != cur) {
+            if(update[i]->_forward[i] != cur) {
                 break;
             }
-            update[i]._forward[i] = cur->_forward[i];
+            update[i]->_forward[i] = cur->_forward[i];
         }
         delete cur;
 

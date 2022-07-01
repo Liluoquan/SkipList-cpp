@@ -7,8 +7,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <thread>
+#include <iostream>
 
 #include "Server.h"
+
+#define PORT 4242
 
 // 使用给定的端口设置套接字，返回监听到的套接字
 int socket_bind_listen(int port) {
@@ -55,8 +58,8 @@ int socket_bind_listen(int port) {
 
 
 int main(int argc, char* argv[]) {
-    int threadNum = 2;
-    int port = 4242;
+    // int threadNum = 2;
+    int port = PORT;
 
     int opt;
     const char* str = "p:";
@@ -84,10 +87,10 @@ int main(int argc, char* argv[]) {
     int accept_fd = 0;
     while((accept_fd = accept(listen_fd, (struct sockaddr *)&client_addr, 
                               &client_addr_len)) > 0) {
-        //pthread_create();
+        // std::cout << "create workthread" << std::endl;
         std::thread workThread(SkipListWorker::threadFunc, accept_fd);
+        workThread.detach();
     }
-
 }
 
 

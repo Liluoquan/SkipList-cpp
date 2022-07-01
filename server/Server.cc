@@ -117,18 +117,19 @@ parseState SkipListWorker::parseCommand(std::string cmd, std::vector<std::string
         ++right;
     }
 
-    if(cmdList.size() == 1) return parseState::ERR;
+    // if(cmdList.size() == 1) return parseState::ERR;
 
     std::string cmdName = cmdList.front();
     // 先将 命令名 转换为大写
     std::transform(cmdName.begin(), cmdName.end(), cmdName.begin(), toupper);
-    if (_cmdMap.count(cmd) == 0) {  // 命令不存在
+    if (_cmdMap.count(cmdName) == 0) {  // 命令不存在
+        std::cout << "cmdName do not exist..." << std::endl;
         return parseState::ERR;
     }
 
 #ifdef DEBUG
 
-    std::cout << "cmdList is : " << std::endl;
+    std::cout << "cmdList in parseCommand(2) is : " << std::endl;
     for(auto& str : cmdList) {
         std::cout << str << " ";
     }
@@ -136,7 +137,8 @@ parseState SkipListWorker::parseCommand(std::string cmd, std::vector<std::string
 
 #endif
 
-    return _cmdMap[cmd];
+    std::cout << "cmdName in parseCommand(2) is '" << cmdName << "'" << std::endl;
+    return _cmdMap[cmdName];
 }
 
 std::string SkipListWorker::dealWithCmd(std::string cmd) {
@@ -149,14 +151,17 @@ void SkipListWorker::threadFunc(int acceptFd) {
     std::cout << "enter threadFunc now" << std::endl;
     char msgBuff[BUFFSIZE];
     bzero(msgBuff, sizeof(msgBuff));
-
     while(recv(acceptFd, msgBuff, sizeof(msgBuff), 0) > 0) {
         std::string cmd(msgBuff);
         bzero(msgBuff, sizeof(msgBuff));
         std::string res = dealWithCmd(cmd);
+#ifdef DEBUG
+
+        std::cout << "res is '" << res << "'" << std::endl;
+
+#endif
         send(acceptFd, res.c_str(), res.size(), 0);
     }
-
     // 记得关闭连接描述符
     close(acceptFd);
     std::cout << "connection closed" << std::endl;
