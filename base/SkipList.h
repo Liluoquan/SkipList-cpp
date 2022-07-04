@@ -6,7 +6,9 @@
 #include <iostream>
 #include "Node.h"
 
-#define STORE_FILE "../store/dumpFile"
+// #define DEBUG
+
+const std::string STORE_FILE =  "../store/dumpFile";
 const std::string DELIMITER = ":";
 
 std::mutex mtx;
@@ -149,7 +151,9 @@ int SkipList<K, V>::insertElement(const K key, const V value) {
 
     // 如果当前节点的 key 值和待插入节点 key 相等，说明节点已经存在，修改节点值即可
     if(cur != nullptr && cur->getKey() == key) {
+#ifdef DEBUG
         std::cout << "key: " << key << ", exists. Change it" << std::endl;
+#endif
         // FIXME:do we need to change it?
         cur->setValue(value);
         mtx.unlock();
@@ -176,8 +180,9 @@ int SkipList<K, V>::insertElement(const K key, const V value) {
             insertNode->_forward[i] = update[i]->_forward[i];
             update[i]->_forward[i] = insertNode;
         }
-
+#ifdef DEBUG
         std::cout << "Successfully inserted key:" << key << ", value:" << value << std::endl;
+#endif
         ++_elementCount;
     }
 
@@ -207,7 +212,9 @@ level 0         1    4   9 10         30   40    50+-->60      70       100
 */
 template <typename K, typename V>
 bool SkipList<K, V>::searchElement(K key, V& value) {
+#ifdef DEBUG
     std::cout << "search_element-------------" << std::endl;
+#endif
     Node<K, V>* cur = _header;
     
     // 从跳表的最左上角开始查找
@@ -224,11 +231,15 @@ bool SkipList<K, V>::searchElement(K key, V& value) {
     
     if(cur != nullptr && cur->getKey() == key) {
         value = cur->getValue();
+#ifdef DEBUG
         std::cout << "Found key: " << key << ", value: " << cur->getValue() << std::endl;
+#endif
         return true;
     }
-
+#ifdef DEBUG
     std::cout << "Not Found Key:" << key << std::endl;
+#endif
+
     return false;
 }
 
@@ -275,18 +286,26 @@ bool SkipList<K, V>::deleteElement(K key) {
 // 打印整个跳表
 template <typename K, typename V>
 void SkipList<K, V>::displayList() {
+#ifdef DEBUG
     std::cout << "display skipList : " << std::endl;
+#endif
 
     Node<K, V>* cur;
 
     for(int i = _curLevel; i >= 0; --i) {
         cur = _header->_forward[i];
+#ifdef DEBUG
         std::cout << "Level : " << i << ':' << std::endl;
+#endif
         while (cur != nullptr) {
+#ifdef DEBUG
             std::cout << cur->getKey() << ':' << cur->getValue() << ' ';
+#endif
             cur = cur->_forward[i];
         }
+#ifdef DEBUG
         std::cout << std::endl;
+#endif
     }
     return;
 }
@@ -335,13 +354,20 @@ void SkipList<K, V>::get_key_value_from_string(const std::string& str, std::stri
 // 将数据导出到文件
 template <typename K, typename V>
 void SkipList<K, V>::dumpFile() {
+#ifdef DEBUG
     std::cout << "dumpFile ---------------- " << std::endl;
+#endif
+
     _fileWriter.open(STORE_FILE);
     Node<K, V>* cur = _header->_forward[0];
 
     while(cur != nullptr) {
         _fileWriter << cur->getKey() << ":" << cur->getValue() << "\n";
+
+#ifdef DEBUG
         std::cout << cur->getKey() << ":" << cur->getValue() << ";\n";
+#endif
+
         cur = cur->_forward[0];
     }
 
@@ -353,7 +379,10 @@ void SkipList<K, V>::dumpFile() {
 // 从磁盘读取数据
 template <typename K, typename V>
 void SkipList<K, V>::loadFile() {
+#ifdef DEBUG
     std::cout << "loadFile ---------------- " << std::endl;
+#endif
+
     _fileRader.open(STORE_FILE);
     std::string line;
     // FIXME: why use new?
@@ -365,7 +394,10 @@ void SkipList<K, V>::loadFile() {
             continue;
         }
         insertElement(*key, *value);
+#ifdef DEBUG
         std::cout << "key:" << *key << "value:" << *value << std::endl;
+#endif
+
     }
     _fileRader.close();
 }
