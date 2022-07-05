@@ -6,6 +6,7 @@
 #include <functional>
 #include <vector>
 
+#include "../base/SkipList.h"
 
 enum parseState {
     ERR  =  0,
@@ -21,6 +22,7 @@ public:
     static void threadFunc(int acceptFd);
     static parseState parseCommand(std::string cmd, std::vector<std::string>& cmdList);
     static std::string dealWithCmd(std::string cmd);
+    static SkipList<std::string, std::string> _myDB;
 
 private:
     static std::unordered_map<std::string, parseState> _cmdMap;

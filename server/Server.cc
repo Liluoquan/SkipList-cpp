@@ -7,7 +7,6 @@
 #include <stdio.h>
 
 #include "Server.h"
-#include "../base/SkipList.h"
 
 #define BUFFSIZE 1024
 #define LEVELOFSKIPLIST 12
@@ -15,7 +14,7 @@
 // API for debug
 #define DEBUG
 
-static SkipList<std::string, std::string> myDB(LEVELOFSKIPLIST);
+SkipList<std::string, std::string> SkipListWorker:: _myDB(LEVELOFSKIPLIST);
 
 std::unordered_map<std::string, parseState> SkipListWorker::_cmdMap = {
     {"SET", parseState::SET},
@@ -48,12 +47,12 @@ std::string SkipListWorker::handlerERR(std::vector<std::string>& cmdList) {
 }
 
 std::string SkipListWorker::handlerSET(std::vector<std::string>& cmdList) {
-    // myDB.insertElement();
+    // _myDB.insertElement();
     // SET key value
     if (cmdList.size() != 3) {
         return "error : please enter a correct command : SET key value\n";
     }
-    if (!myDB.insertElement(cmdList[1], cmdList[2])) {
+    if (!_myDB.insertElement(cmdList[1], cmdList[2])) {
         return "ok : SET successfully\n";
     }
     else {
@@ -66,7 +65,7 @@ std::string SkipListWorker::handlerDEL(std::vector<std::string>& cmdList) {
     if (cmdList.size() != 2) {
         return "error : please enter a correct command : DEL key\n";
     }
-    if (myDB.deleteElement(cmdList[1])) {
+    if (_myDB.deleteElement(cmdList[1])) {
         return "ok : DEL successfully\n";
     }
     else {
@@ -80,7 +79,7 @@ std::string SkipListWorker::handlerGET(std::vector<std::string>& cmdList) {
         return "please enter a correct command : GET key\n";
     }
     std::string value;
-    if (myDB.searchElement(cmdList[1], value)) {
+    if (_myDB.searchElement(cmdList[1], value)) {
         return "ok : " + value + "\n";
     }
     else {
@@ -89,12 +88,12 @@ std::string SkipListWorker::handlerGET(std::vector<std::string>& cmdList) {
 }
 
 std::string SkipListWorker::handlerDUMP(std::vector<std::string>& cmdList) {
-    myDB.dumpFile();
+    _myDB.dumpFile();
     return "ok : dump file successfully\n";
 }
 
 std::string SkipListWorker::handlerLOAD(std::vector<std::string>& cmdList) {
-    myDB.loadFile();
+    _myDB.loadFile();
     return "ok : load file successfully\n";
 }
 

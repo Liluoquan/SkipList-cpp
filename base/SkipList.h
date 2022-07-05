@@ -75,6 +75,7 @@ SkipList<K, V>::SkipList() {
     K k;
     V v;
     _header = new Node<K, V>(k, v, _maxLevel);
+    loadFile();
 }
 
 // 建造跳表

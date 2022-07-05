@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include "Server.h"
+#include "../base/Timer.h"
 
 #define PORT 4242
 
@@ -85,12 +86,20 @@ int main(int argc, char* argv[]) {
     memset(&client_addr, 0, sizeof(struct sockaddr_in));
     socklen_t client_addr_len = sizeof(client_addr);
     int accept_fd = 0;
+
+    Timer myTimer;
+    myTimer.start(5, []() {
+        SkipListWorker::_myDB.dumpFile();
+    });
+
     while((accept_fd = accept(listen_fd, (struct sockaddr *)&client_addr, 
                               &client_addr_len)) > 0) {
         // std::cout << "create workthread" << std::endl;
         std::thread workThread(SkipListWorker::threadFunc, accept_fd);
         workThread.detach();
     }
+
+    myTimer.stop();
 }
 
 

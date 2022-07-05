@@ -28,6 +28,7 @@ private:
 
 
 inline ThreadPool::ThreadPool(size_t threads) : _stop(false) {
+    // 设置线程任务
     for(size_t i = 0; i < threads; ++i) {
         // 每个线程需要做的事情很简单：
         // 1. 从任务队列中获取任务（需要保护临界区）
