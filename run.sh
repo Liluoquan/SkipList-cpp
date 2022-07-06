@@ -1,2 +1,2 @@
-mkdir ./bin
+mkdir -p ./bin/test
 make

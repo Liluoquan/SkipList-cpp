@@ -11,7 +11,7 @@
 const std::string STORE_FILE =  "../store/dumpFile";
 const std::string DELIMITER = ":";
 
-std::mutex mtx;
+static std::mutex mtx;
 
 template <typename K, typename V>
 class SkipList {
