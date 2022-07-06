@@ -359,7 +359,11 @@ void SkipList<K, V>::dumpFile() {
     std::cout << "dumpFile ---------------- " << std::endl;
 #endif
 
-    _fileWriter.open(STORE_FILE);
+    if (!_fileWriter.is_open()) {
+        _fileWriter.open(STORE_FILE, std::ios::out | std::ios::trunc);
+    }
+
+    // _fileWriter.open(STORE_FILE);
     Node<K, V>* cur = _header->_forward[0];
 
     while(cur != nullptr) {

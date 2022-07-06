@@ -12,7 +12,7 @@
 
 class ThreadPool {
 public:
-    ThreadPool(size_t);
+    ThreadPool(size_t threads);
     ~ThreadPool();
     template<typename F, typename... Args>
     auto enqueue(F&& f, Args&&... args)

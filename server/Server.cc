@@ -15,6 +15,7 @@
 #define DEBUG
 
 SkipList<std::string, std::string> SkipListWorker:: _myDB(LEVELOFSKIPLIST);
+ThreadPool SkipListWorker::_readThreadPool(2);
 
 std::unordered_map<std::string, parseState> SkipListWorker::_cmdMap = {
     {"SET", parseState::SET},
@@ -79,7 +80,11 @@ std::string SkipListWorker::handlerGET(std::vector<std::string>& cmdList) {
         return "please enter a correct command : GET key\n";
     }
     std::string value;
-    if (_myDB.searchElement(cmdList[1], value)) {
+    bool searchResult = _readThreadPool.enqueue([&](){
+        return _myDB.searchElement(cmdList[1], value);
+    }).get();
+
+    if (searchResult) {
         return "ok : " + value + "\n";
     }
     else {

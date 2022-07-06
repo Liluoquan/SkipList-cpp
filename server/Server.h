@@ -5,8 +5,10 @@
 #include <unordered_map>
 #include <functional>
 #include <vector>
+#include <thread>
 
 #include "../base/SkipList.h"
+#include "../base/ThreadPool.h"
 
 enum parseState {
     ERR  =  0,
@@ -27,6 +29,7 @@ public:
 private:
     static std::unordered_map<std::string, parseState> _cmdMap;
     static std::vector<std::function<std::string(std::vector<std::string>&)>> _handler;
+    static ThreadPool _readThreadPool;
     
     static std::string handlerERR(std::vector<std::string>& cmdList);
     static std::string handlerSET(std::vector<std::string>& cmdList);
